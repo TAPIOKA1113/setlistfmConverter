@@ -38,18 +38,20 @@ def submit_setlist():
       
        for key in data['songs']:
         st.write(key['name']) # nameのみ参照
-        add_playlist(key["name"], key['original_artist'])
+        search_song(key["name"], key['original_artist'])
 
        return data
        
 def create_playlist():
    spotify.user_playlist_create(username, "myplaylist", public=False)
 
-def add_playlist(name: str, artist: str):
+def search_song(name: str, artist: str):
    q = f"{quote_plus(name)} {quote_plus(artist)}"
    data = spotify.search(q, limit=1, offset=0, type='track', market="US")
    st.write(data)
 
+def add_playlist():
+   
 def main():
    st.title("プレイリスト作成アプリ")
    st.write('このアプリはsetlist.fm(https://www.setlist.fm/)のURLからSpotifyのプレイリストを作成するアプリです')
