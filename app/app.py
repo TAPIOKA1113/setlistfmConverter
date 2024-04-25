@@ -12,7 +12,7 @@ from urllib.parse import quote_plus
 username = '6w0j4q09g6iki4c318olak6a4' 
 my_id ='eed84f1ca1b2496fb69628e871630668' 
 my_secret = '381e0a9c2b95490d82353d755c1d600f' 
-token = "BQBLsKCWcjWOiMWgrwUhK4ga8wTrWJyFGadB2sgTohsbaTLod4KX2_2vgFfEciI2s9CHHrkeAvAHDxbJw9wsA4g3tIiZWV9TKNyPKLCCjgDGiEq5Z3sYtn2o439Xnz4xjnPliRPhQP3DM60PGdK2HiaTw4D_6_ja6wR551q2rqlyi_6UmxHv_wdSDNQEdTzQKr6p4IC6ZtzdFy9O6gfTs3eLTfeZTww5-WxALRPv_IIbC0gUKF9jrVj7HSiGfQAxc2c"
+token = "BQBJ5i_naSF15AN-EKQ1yQ0xSBuWHF0vGzEfaFOOboM4LjPdzJVAarn2opSf5QKPZdnrsBGxZqVt9t74YhGHjOVq3zFlKCrPXB2UGX7JZYzmtZXLtSKtO7zLlENJG5IUS75OYdkvv45qdq3vEE6RTQywGyP69EeCZcReGQRw4o7qxowi54sMBLUIClnfJIgLLGun55sBhoP97X_6V2jexFE7B7VBPK73kmy7rJkiAVN1LzvzarFCX8vwAy1k3ZfoDSY"
 spotify = spotipy.Spotify(auth = token)
 
 
@@ -26,7 +26,7 @@ def submit_setlist():
 
        id_part = url[last_hyphen_index+1:dot_html_index]
        
-      #  create_playlist()
+       playlist_id = create_playlist()
        #仮想マシンの8000番をmacの8000番と紐づけているため、仮想マシン上のCLIでこのコードを実行する場合は、urlにローカルホスト（仮想マシン）の8000番を指定しないといけない
        url = f"http://0.0.0.0:8000/setlists/{id_part}"
        headers = {
@@ -38,20 +38,25 @@ def submit_setlist():
       
        for key in data['songs']:
         st.write(key['name']) # nameのみ参照
-        search_song(key["name"], key['original_artist'])
+        track_id = search_song(key["name"], key['original_artist'])
+        add_playlist(playlist_id, track_id)
 
        return data
        
 def create_playlist():
-   spotify.user_playlist_create(username, "myplaylist", public=False)
+   data = spotify.user_playlist_create(username, "myplaylist", public=False)
+   return data['id']  #プレイリストIDを返す
 
 def search_song(name: str, artist: str):
    q = f"{quote_plus(name)} {quote_plus(artist)}"
    data = spotify.search(q, limit=1, offset=0, type='track', market="US")
    st.write(data)
-
-def add_playlist():
+   return data['tracks']['items'][0]['uri']#トラックURIを返す
    
+
+def add_playlist(playlist_id: str, track_id: str):
+   spotify.playlist_add_items(playlist_id, track_id, position=None)
+
 def main():
    st.title("プレイリスト作成アプリ")
    st.write('このアプリはsetlist.fm(https://www.setlist.fm/)のURLからSpotifyのプレイリストを作成するアプリです')
