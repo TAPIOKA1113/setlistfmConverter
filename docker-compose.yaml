@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   demo-app:
     build: .
@@ -7,3 +7,4 @@ services:
       - .:/src
     ports:
       - 8005:8000  # ホストマシンのポート8000を、docker内のポート8000に接続する
+      - 8080:8080
