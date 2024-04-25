@@ -12,7 +12,7 @@ from urllib.parse import quote_plus
 username = '6w0j4q09g6iki4c318olak6a4' 
 my_id ='eed84f1ca1b2496fb69628e871630668' 
 my_secret = '381e0a9c2b95490d82353d755c1d600f' 
-token = "BQBJ5i_naSF15AN-EKQ1yQ0xSBuWHF0vGzEfaFOOboM4LjPdzJVAarn2opSf5QKPZdnrsBGxZqVt9t74YhGHjOVq3zFlKCrPXB2UGX7JZYzmtZXLtSKtO7zLlENJG5IUS75OYdkvv45qdq3vEE6RTQywGyP69EeCZcReGQRw4o7qxowi54sMBLUIClnfJIgLLGun55sBhoP97X_6V2jexFE7B7VBPK73kmy7rJkiAVN1LzvzarFCX8vwAy1k3ZfoDSY"
+token = "BQC-lDGOpx8dqIwy26HJfTiOn9hoAk-ECFk8YuoM1GElCQ04FieguGcxxKSd6SBcqcT7-kPV_mqQco2nYMTTLX8iI0oL_Oqo1Ri_s1owCyw3oEdOsDSe7j1Pxf7mm8_3FbHJhTgiJTE6oF49H2IKRdEr9zL0YsGZxDUtM-MPAoi_IhiwYwcwGR6jvMX601euty4NAo8mqn8TwVQNQdV3iKCwoVZb5wHA5twxB2jAVQCHdFaeOuIOav9ybeMKspSkVJA"
 spotify = spotipy.Spotify(auth = token)
 
 
@@ -45,17 +45,20 @@ def submit_setlist():
        
 def create_playlist():
    data = spotify.user_playlist_create(username, "myplaylist", public=False)
+   st.write(data['id'])
    return data['id']  #プレイリストIDを返す
+   
 
 def search_song(name: str, artist: str):
    q = f"{quote_plus(name)} {quote_plus(artist)}"
    data = spotify.search(q, limit=1, offset=0, type='track', market="US")
+   st.write(data['tracks']['items'][0]['id'])
    st.write(data)
-   return data['tracks']['items'][0]['uri']#トラックURIを返す
+   return data['tracks']['items'][0]['id'] #トラックURIを返す
    
 
 def add_playlist(playlist_id: str, track_id: str):
-   spotify.playlist_add_items(playlist_id, track_id, position=None)
+   spotify.user_playlist_add_tracks(username, playlist_id, [track_id])
 
 def main():
    st.title("プレイリスト作成アプリ")
