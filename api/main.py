@@ -17,7 +17,7 @@ class Song(BaseModel):
 
 class Setlist(BaseModel):
     artist_name: str
-    #event_date: datetime
+    event_date: datetime
     location: str
     venue: str
     tour_name: str
@@ -35,7 +35,7 @@ def get_setlist(setlist_fm_id: str):
     data = response.json()
 
     artist_name = data["artist"]["name"]
-    #event_date = datetime.fromisoformat(data["eventDate"])
+    event_date = datetime.strptime(data["eventDate"], '%d-%m-%Y')
     venue_data = data["venue"]
     city_data = venue_data["city"]
     country = city_data["country"]["name"]
@@ -70,7 +70,7 @@ def get_setlist(setlist_fm_id: str):
 
     setlist = Setlist(
         artist_name=artist_name,
-        #event_date=event_date,
+        event_date=event_date,
         location=city,
         venue=venue,
         tour_name=tour_name,
