@@ -13,7 +13,7 @@ import streamlit.components.v1 as components
 username = 'gnti7y5zkih9elje0lzd4b84g' 
 my_id ='7ca33bfaf9ce41fbbc43a2abeec4e53d' 
 my_secret = '79b0572f34084761b508cbca34bd3512' 
-token = "BQCcPdiOLN5U0AEIlG77vptm0J1_uBbMBsgXxP9W8O9N4jcG2-CaffzwBrm9CeMarsco1Oisoyx9iZf-7wBbgJLAfEpXLTr4EsM8K5FLuZ3saGJVqCh4qDou5GNspCx2NJLBUp2-gKj2vNTg8NgxUqr_03izPHPQIVQeHx0eKDs-KfhdYGwQmr3NXWD9lzbtiMvlJypYgBDtLVdGYVdQnEljVpEeYLtl2Q"
+token = "BQB-l8vv3TZK9z_eIlb8bkMyrxbhAcy8m6Y6DkFJ8O78BzJGIFGj6PkJcnQMDkGRV5UHgCTf9J1tgICFVKUiDjp40WjlEcpFV8fGP_fPDqkdtKgZWxNoTmQS7P99RywW2iCT9MCyCvMmblvlApcCwQg0uTc-x8ycNZJrx6Vo_AyvU87QMp_rFY5ZGyfrehQRcDgRwStpOQp_W6WqTsolCL_yz-98hqlDFuhzKW0c36zoRjNyb9kKcMZH2zEU4Go"
 spotify = spotipy.Spotify(auth = token)
 
 
