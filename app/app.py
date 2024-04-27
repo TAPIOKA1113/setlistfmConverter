@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import chardet
+#import chardet
 import requests
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -68,8 +68,6 @@ def submit_setlist():
 def search_song(name: str, artist: str):
    q = f"{quote_plus(name)} {quote_plus(artist)}"
    data = spotify.search(q, limit=1, offset=0, type='track', market="US")
-   #st.write(data['tracks']['items'][0]['id'])
-   #st.write(data)
    return data['tracks']['items'][0]['id'] #トラックURIを返す
    
 
