@@ -16,7 +16,7 @@ load_dotenv()
 username = os.getenv("USER_NAME")
 my_id = os.getenv("MY_ID")
 my_secret = os.getenv("MY_SECRET")
-token = os.getenv("TOKEN")
+token = 'BQAWOt4RIw7RDgR4N13VjVOwWlr2f_mX8EYAtVjyhGBjbhym4LPwdnXyzvOFdNpnRHkwYpC5n7Ix5D0z0utqBhP1q6khI0r-egDSLOfJvXXxnG7ql6oHFXZT0P0AIkVnEsoDnuEftUNQ0bCGZ81DJ6QRzUgmAddwiUuh-MUxQ5JXXMEJcnvgu0B6TmwRoCX6o9zFAfYxztXrBL4wOdll7W2nr9TzPT4eUsNu8kyhP283HX8xk1hq19Xyr4KAwQw'
 spotify = spotipy.Spotify(auth = token)
 
 
@@ -27,10 +27,9 @@ def submit_setlist():
        # ここで入力されたURLを処理する
        last_hyphen_index = url.rfind("-")
        dot_html_index = url.rfind(".html")
-
+       
        id_part = url[last_hyphen_index+1:dot_html_index]
        
-       playlist_id = create_playlist()
        #仮想マシンの8000番をmacの8000番と紐づけているため、仮想マシン上のCLIでこのコードを実行する場合は、urlにローカルホスト（仮想マシン）の8000番を指定しないといけない
        url = f"http://0.0.0.0:8000/setlists/{id_part}"
        headers = {
@@ -39,21 +38,19 @@ def submit_setlist():
        response = requests.get(url, headers=headers)
        response.raise_for_status()
        data = response.json()
+       date_part = data['event_date'].split('T')[0]
+       
+       playlist = spotify.user_playlist_create(username, data['artist_name'] + '  ' + data['tour_name'] + '  (' + date_part + ')', public=True)
       
        for key in data['songs']:
         #st.write(key['name']) # nameのみ参照
         track_id = search_song(key["name"], key['original_artist'])
-        add_playlist(playlist_id, track_id)
+        add_playlist(playlist['id'], track_id)
        
 
-       components.iframe("https://open.spotify.com/embed/playlist/" + playlist_id , height=500)
+       components.iframe("https://open.spotify.com/embed/playlist/" + playlist['id'] , height=500)
 
        return data
-       
-def create_playlist():
-   data = spotify.user_playlist_create(username, "myplaylist", public=True)
-   #st.write(data['id'])
-   return data['id']  #プレイリストIDを返す
    
 
 def search_song(name: str, artist: str):
