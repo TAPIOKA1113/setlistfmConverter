@@ -9,11 +9,14 @@ import json
 import re
 from urllib.parse import quote_plus
 import streamlit.components.v1 as components
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-username = 'gnti7y5zkih9elje0lzd4b84g' 
-my_id ='7ca33bfaf9ce41fbbc43a2abeec4e53d' 
-my_secret = '79b0572f34084761b508cbca34bd3512' 
-token = "BQB-l8vv3TZK9z_eIlb8bkMyrxbhAcy8m6Y6DkFJ8O78BzJGIFGj6PkJcnQMDkGRV5UHgCTf9J1tgICFVKUiDjp40WjlEcpFV8fGP_fPDqkdtKgZWxNoTmQS7P99RywW2iCT9MCyCvMmblvlApcCwQg0uTc-x8ycNZJrx6Vo_AyvU87QMp_rFY5ZGyfrehQRcDgRwStpOQp_W6WqTsolCL_yz-98hqlDFuhzKW0c36zoRjNyb9kKcMZH2zEU4Go"
+username = os.getenv("USER_NAME")
+my_id = os.getenv("MY_ID")
+my_secret = os.getenv("MY_SECRET")
+token = os.getenv("TOKEN")
 spotify = spotipy.Spotify(auth = token)
 
 
