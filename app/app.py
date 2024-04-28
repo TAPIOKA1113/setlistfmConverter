@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 #import chardet
+import datetime
 import requests
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -37,12 +38,11 @@ def submit_setlist():
    url = st.text_input("URLを入力", placeholder="https://www.setlist.fm/")
    submit = st.button("作成")
    if submit:
-       st.write(token_info)
+       
        # ここで入力されたURLを処理する
        if token_info == None:
         auth_url = 'https://accounts.spotify.com/api/token'
         response = requests.post(auth_url, headers=auth_headers, data=auth_data)
-        st.write(response.json()['access_token'])
         access_token = response.json()['access_token']
         spotify = spotipy.Spotify(auth = access_token)
 
