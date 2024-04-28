@@ -15,11 +15,11 @@ from dotenv import load_dotenv
 import base64
 load_dotenv()
 
-username = 'gnti7y5zkih9elje0lzd4b84g' 
-my_id = '7ca33bfaf9ce41fbbc43a2abeec4e53d' 
-my_secret = '79b0572f34084761b508cbca34bd3512'
+username = os.getenv("USER_NAME") 
+my_id = os.getenv("MY_ID") 
+my_secret = os.getenv("MY_SECRET") 
 access_token = ''
-refresh_token = 'AQDbn04HT4tNMovNt2r3j_xiNOz2qJPXrsIszfJEH7MfEQCR2ZBGsk9vrBeYosvqfy92UM2ciFLONzwd3K8J63wklBh9NBGfIypgOg-wgRpjGiYuPYD6gc933gNR_TpnhNU'
+refresh_token = os.getenv("REFRESH_TOKEN") 
 sp_oauth = oauth2.SpotifyOAuth(client_id=my_id,client_secret=my_secret,redirect_uri='http://localhost:3000',scope='playlist-modify-public')
 token_info = sp_oauth.get_cached_token() 
 
@@ -45,7 +45,6 @@ def submit_setlist():
         st.write(response.json()['access_token'])
         access_token = response.json()['access_token']
         spotify = spotipy.Spotify(auth = access_token)
-        st.write(access_token)
 
        last_hyphen_index = url.rfind("-")
        dot_html_index = url.rfind(".html")
