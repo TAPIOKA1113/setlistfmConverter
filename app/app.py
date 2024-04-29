@@ -70,7 +70,7 @@ def submit_setlist():
          components.iframe("https://open.spotify.com/embed/playlist/" + playlist['id'] , height=500)
       
       elif api_choice == 'YouTube':
-         videoId = 'hQtmJY84dNY'
+         videoId = 'JrGugZqMN1k'
 
          youtube = build('youtube', 'v3', developerKey=youtube_api_key)
          videos_response = youtube.videos().list(
