@@ -6,7 +6,6 @@ import requests
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy import oauth2
-from apiclient.discovery import build
 import sys
 import json
 import re
@@ -15,6 +14,14 @@ import streamlit.components.v1 as components
 import os
 from dotenv import load_dotenv
 import base64
+
+import httplib2
+from apiclient.discovery import build
+from apiclient.errors import HttpError
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.file import Storage
+from oauth2client.tools import argparser, run_flow
+from googleapiclient.discovery import build
 load_dotenv()
 
 username = os.getenv("USER_NAME") 
@@ -53,10 +60,7 @@ def submit_setlist():
             access_token = response.json()['access_token']
             spotify = spotipy.Spotify(auth = access_token)
 
-         last_hyphen_index = url.rfind("-")
-         dot_html_index = url.rfind(".html")
-         
-         id_part = url[last_hyphen_index+1:dot_html_index]
+         id_part = generate_url(url)
          
          data = get_to_setlistfm(id_part)
          date_part = data['event_date'].split('T')[0]
@@ -70,22 +74,35 @@ def submit_setlist():
          components.iframe("https://open.spotify.com/embed/playlist/" + playlist['id'] , height=500)
       
       elif api_choice == 'YouTube':
-         videoId = 'JrGugZqMN1k'
 
-         youtube = build('youtube', 'v3', developerKey=youtube_api_key)
-         videos_response = youtube.videos().list(
-            part='snippet,statistics',
-            id='{},'.format(videoId)
+         id_part = generate_url(url)
+
+         data = get_to_setlistfm(id_part)
+         date_part = data['event_date'].split('T')[0]
+         
+         st.write(data)
+         st.write(date_part)
+         
+         title = 'B-life Test 10分〜15分'
+         description = '再生時間が10分〜15分の動画の再生リスト'
+         privacy_status = 'public'  # 'private'
+
+         # 新規再生リストを追加
+         # https://developers.google.com/youtube/v3/docs/playlists/insert
+         youtube_auth = build('youtube', 'v3', developerKey=youtube_api_key)
+         
+         playlists_insert_response = youtube_auth.playlists().insert(
+            part="snippet, status",
+            body=dict(
+               snippet=dict(
+                  title=title,
+                  description=description
+               ),
+               status=dict(
+                  privacyStatus=privacy_status
+               )
+            )
          ).execute()
-         # snippet
-         snippetInfo = videos_response["items"][0]["snippet"]
-         # 動画タイトル
-         title = snippetInfo['title']
-         # チャンネル名
-         channeltitle = snippetInfo['channelTitle']
-         st.write(channeltitle)
-         st.write(title)
-
 
 def sp_search_song(name: str, artist: str):
    spotify = spotipy.Spotify(auth = access_token)
@@ -98,7 +115,7 @@ def sp_add_playlist(playlist_id: str, track_id: str):
    spotify = spotipy.Spotify(auth = access_token)
    spotify.user_playlist_add_tracks(username, playlist_id, [track_id])
 
-def get_to_setlistfm(id_part):
+def get_to_setlistfm(id_part): #id_partはsetlist.fmのURLの一部
    #仮想マシンの8000番をmacの8000番と紐づけているため、仮想マシン上のCLIでこのコードを実行する場合は、urlにローカルホスト（仮想マシン）の8000番を指定しないといけない
    url = f"http://0.0.0.0:8000/setlists/{id_part}"
    headers = {
@@ -109,6 +126,15 @@ def get_to_setlistfm(id_part):
    data = response.json()
 
    return data
+
+def generate_url(url): #setlist.fmのURLからID部分を取得する
+   last_hyphen_index = url.rfind("-")
+   dot_html_index = url.rfind(".html")
+         
+   id_part = url[last_hyphen_index+1:dot_html_index]
+
+   return id_part
+
 
 def main():
    st.title("プレイリスト作成アプリ")
