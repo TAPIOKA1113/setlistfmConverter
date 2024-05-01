@@ -59,6 +59,12 @@ def submit_setlist():
             response = requests.post(auth_url, headers=auth_headers, data=auth_data)
             access_token = response.json()['access_token']
             spotify = spotipy.Spotify(auth = access_token)
+         
+         check_url = re.match(r'https://www.setlist.fm/', url)
+
+         if check_url == None:
+            st.write('URLが正しくありません')
+            return
 
          id_part = generate_url(url)
          
@@ -74,6 +80,12 @@ def submit_setlist():
          components.iframe("https://open.spotify.com/embed/playlist/" + playlist['id'] , height=500)
       
       elif api_choice == 'YouTube':
+
+         check_url = re.match(r'https://www.setlist.fm/', url)
+
+         if check_url == None:
+            st.write('URLが正しくありません')
+            return
 
          id_part = generate_url(url)
 
