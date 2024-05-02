@@ -15,7 +15,6 @@ from dotenv import load_dotenv
 import base64
 from datetime import datetime
 
-import httplib2
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 from oauth2client.client import flow_from_clientsecrets
