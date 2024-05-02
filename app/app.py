@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 #import chardet
-import datetime
 import requests
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -14,6 +13,7 @@ import streamlit.components.v1 as components
 import os
 from dotenv import load_dotenv
 import base64
+from datetime import datetime
 
 import httplib2
 from apiclient.discovery import build
@@ -68,9 +68,8 @@ def submit_setlist():
 
          id_part = generate_url(url)
          
-         data = get_to_setlistfm(id_part)
-         date_part = data['event_date'].split('T')[0]
-
+         data = get_setlist(id_part)
+         date_part = data['event_date'].strftime('%Y-%m-%d')
          playlist = spotify.user_playlist_create(username, data['artist_name'] + '  ' + data['tour_name'] + '  (' + date_part + ')', public=True)
          
          for key in data['songs']:
@@ -85,12 +84,12 @@ def submit_setlist():
 
          if check_url == None:
             st.write('URLが正しくありません')
-            return
+            return 
 
          id_part = generate_url(url)
 
          data = get_to_setlistfm(id_part)
-         date_part = data['event_date'].split('T')[0]
+         date_part = data['event_date'].strftime('%Y-%m-%d')
          
          st.write(data)
          st.write(date_part)
@@ -127,17 +126,6 @@ def sp_add_playlist(playlist_id: str, track_id: str):
    spotify = spotipy.Spotify(auth = access_token)
    spotify.user_playlist_add_tracks(username, playlist_id, [track_id])
 
-def get_to_setlistfm(id_part): #id_partはsetlist.fmのURLの一部
-   #仮想マシンの8000番をmacの8000番と紐づけているため、仮想マシン上のCLIでこのコードを実行する場合は、urlにローカルホスト（仮想マシン）の8000番を指定しないといけない
-   url = f"http://0.0.0.0:8000/setlists/{id_part}"
-   headers = {
-   "Accept": "application/json",
-   }
-   response = requests.get(url, headers=headers)
-   response.raise_for_status()
-   data = response.json()
-
-   return data
 
 def generate_url(url): #setlist.fmのURLからID部分を取得する
    last_hyphen_index = url.rfind("-")
@@ -146,6 +134,61 @@ def generate_url(url): #setlist.fmのURLからID部分を取得する
    id_part = url[last_hyphen_index+1:dot_html_index]
 
    return id_part
+
+def get_setlist(setlist_fm_id: str):
+   url = f"https://api.setlist.fm/rest/1.0/setlist/{setlist_fm_id}"
+   headers = {
+      "x-api-key": "rvH9s-nOQE4FOGgLByWj1VfmjzqIaEt5Q8wB",
+      "Accept": "application/json",
+   }
+   response = requests.get(url, headers=headers)
+   response.raise_for_status()
+   data = response.json()
+
+   artist_name = data["artist"]["name"]
+   event_date = datetime.strptime(data["eventDate"], '%d-%m-%Y')
+   venue_data = data["venue"]
+   city_data = venue_data["city"]
+   country = city_data["country"]["name"]
+   city = f"{city_data['name']}, {country}"
+   venue = venue_data["name"]
+   tour_name = data["tour"]["name"] if "tour" in data else ""
+
+   setlist_songs = []
+   index = 0
+   for set_data in data["sets"]["set"]:
+      songs = set_data["song"]
+      for song_data in songs:
+         index += 1
+         song_name = song_data["name"]
+         is_tape = song_data.get("tape", False)
+         is_cover = "cover" in song_data
+         medley_parts = song_name.split(" / ")
+         is_medley_part = len(medley_parts) > 1
+
+         for medley_part in medley_parts:
+               original_artist = song_data["cover"]["name"] if is_cover else artist_name
+               song = {
+                  'index': index,
+                  'name': medley_part,
+                  'artist': artist_name,
+                  'original_artist': original_artist,
+                  'is_tape': is_tape,
+                  'is_cover': is_cover,
+                  'is_medley_part': is_medley_part
+               }
+               setlist_songs.append(song)
+
+   setlist = {
+      'artist_name':artist_name,
+      'event_date': event_date,
+      'location': city,
+      'venue=': venue,
+      'tour_name': tour_name,
+      'songs': setlist_songs
+   }
+
+   return setlist
 
 
 def main():
