@@ -14,13 +14,6 @@ import os
 from dotenv import load_dotenv
 import base64
 from datetime import datetime
-
-from apiclient.discovery import build
-from apiclient.errors import HttpError
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.file import Storage
-from oauth2client.tools import argparser, run_flow
-from googleapiclient.discovery import build
 load_dotenv()
 
 username = os.getenv("USER_NAME") 
