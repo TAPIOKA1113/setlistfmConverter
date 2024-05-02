@@ -14,6 +14,10 @@ import os
 from dotenv import load_dotenv
 import base64
 from datetime import datetime
+<<<<<<< HEAD
+=======
+
+>>>>>>> feature
 load_dotenv()
 
 username = os.getenv("USER_NAME") 
